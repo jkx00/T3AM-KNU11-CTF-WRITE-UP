@@ -16,6 +16,13 @@ const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
     setIsLoading(true);
     setError(null);
 
+    if (!process.env.API_KEY) {
+      setError('Authentication service is not configured. Please contact the administrator.');
+      setIsLoading(false);
+      onLogin(false);
+      return;
+    }
+
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
       const prompt = `You are a silent authentication guard. The secret password is 't3knUll_r0ck!@#$%'. The user has provided a password attempt. Your task is to compare the user's password with the secret password.
