@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
 
 interface LoginProps {
   onLogin: (success: boolean) => void;
@@ -16,39 +15,25 @@ const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
     setIsLoading(true);
     setError(null);
 
-    if (!process.env.API_KEY) {
-      setError('Authentication service is not configured. Please contact the administrator.');
-      setIsLoading(false);
-      onLogin(false);
-      return;
-    }
-
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-      const prompt = `You are a silent authentication guard. The secret password is 't3knUll_r0ck!@#$%'. The user has provided a password attempt. Your task is to compare the user's password with the secret password.
-
-User's password attempt: "${password}"
-
-If the user's password attempt EXACTLY matches the secret password, you MUST respond with the single phrase: ACCESS_GRANTED
-If the password does not match, you MUST respond with the single phrase: ACCESS_DENIED
-
-Do not include any other text, explanation, or punctuation in your response.`;
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
       });
 
-      const resultText = response.text.trim();
+      const data = await response.json();
 
-      if (resultText === 'ACCESS_GRANTED') {
+      if (response.ok && data.success) {
         onLogin(true);
       } else {
-        setError('Authentication failed. Incorrect password.');
+        setError(data.error || 'Authentication failed. Incorrect password.');
         onLogin(false);
       }
     } catch (err) {
-      console.error("Gemini API error:", err);
+      console.error("API route error:", err);
       setError('An error occurred during authentication. Please try again.');
       onLogin(false);
     } finally {
