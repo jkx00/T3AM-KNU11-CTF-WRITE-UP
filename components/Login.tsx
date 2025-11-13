@@ -18,7 +18,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-      const prompt = `You are a silent authentication guard. The secret password is 't3knUll_r0ck$!'. The user has provided a password attempt. Your task is to compare the user's password with the secret password.
+      const prompt = `You are a silent authentication guard. The secret password is 't3knUll_r0ck!@#$%'. The user has provided a password attempt. Your task is to compare the user's password with the secret password.
 
 User's password attempt: "${password}"
 
