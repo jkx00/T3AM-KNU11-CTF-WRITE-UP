@@ -49,7 +49,7 @@ const loadWriteups = (): Writeup[] => {
 const Header: React.FC<HeaderProps> = ({ isAdmin, onLogoutClick }) => (
   <header className="py-8 px-4 text-center border-b-2 border-gray-800 relative">
     <GlitchText text="T3AM KNU11 CTF" />
-    <p className="mt-4 text-gray-400 font-mono">// A collection of cybersecurity exploits and chronicles</p>
+    <p className="mt-4 text-gray-400 font-mono">CTF WRITE-UP BLOG</p>
     <div className="absolute top-4 right-4">
         {isAdmin && (
             <button onClick={onLogoutClick} className="font-mono text-sm border border-gray-600 px-3 py-1 text-gray-400 hover:bg-gray-200 hover:text-black transition-colors">
@@ -69,7 +69,7 @@ const Footer: React.FC<FooterProps> = ({ onCopyrightClick }) => (
         title="Admin Access"
       >
         &copy;
-      </span> {new Date().getFullYear()} T3AM KNU11 // All rights reserved. Disconnecting from host...
+      </span> {new Date().getFullYear()} T3AM KNU11
     </p>
   </footer>
 );
