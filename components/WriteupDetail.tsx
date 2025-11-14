@@ -27,6 +27,28 @@ const WriteupDetail: React.FC<WriteupDetailProps> = ({ writeup, onBack, onUpdate
     onDelete(writeup.id);
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      onUpdate({
+        ...writeup,
+        attachment: {
+          data: reader.result as string,
+          mimeType: file.type,
+          name: file.name,
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAttachment = () => {
+    onUpdate({ ...writeup, attachment: null });
+  };
+
   const inputStyles = "w-full bg-transparent border-b-2 border-gray-700 focus:border-white outline-none transition-colors duration-300 py-2";
   const labelStyles = "text-sm font-mono text-gray-500 uppercase tracking-widest";
   const sectionStyles = "border-t border-gray-800 pt-6 mt-8";
@@ -52,6 +74,19 @@ const WriteupDetail: React.FC<WriteupDetailProps> = ({ writeup, onBack, onUpdate
               className="prose prose-invert prose-pre:bg-black/50 prose-pre:border prose-pre:border-gray-700 prose-p:text-gray-300 prose-h2:text-white prose-strong:text-white text-gray-300 leading-relaxed"
             />
         </div>
+
+        {writeup.attachment?.data && (
+          <div className={sectionStyles}>
+              <h2 className={`${labelStyles} text-2xl text-gray-200 mb-4`}>Attachment</h2>
+              {writeup.attachment.mimeType.startsWith('image/') ? (
+                  <img src={writeup.attachment.data} alt={writeup.attachment.name} className="max-w-full h-auto rounded-md border border-gray-700" />
+              ) : (
+                   <a href={writeup.attachment.data} download={writeup.attachment.name} className="font-mono text-white bg-gray-900 inline-block p-2 border border-gray-700 hover:bg-gray-800">
+                      Download: {writeup.attachment.name}
+                   </a>
+              )}
+          </div>
+        )}
 
         <div className={sectionStyles}>
             <h2 className={`${labelStyles} text-2xl text-gray-200 mb-4`}>Flag</h2>
@@ -123,6 +158,39 @@ const WriteupDetail: React.FC<WriteupDetailProps> = ({ writeup, onBack, onUpdate
                 dangerouslySetInnerHTML={{ __html: writeup.solution }}
                 className="editable-content min-h-[200px] p-4 bg-black/30 border-2 border-dashed border-gray-800 focus:border-gray-500 outline-none rounded-md text-gray-300 leading-relaxed focus:bg-black/50 transition-all duration-300"
             />
+        </div>
+
+        <div className={sectionStyles}>
+            <label htmlFor="attachment" className={`${labelStyles} text-2xl text-gray-200 mb-4 block`}>Attachment</label>
+            {writeup.attachment?.data ? (
+              <div>
+                <img src={writeup.attachment.data} alt={writeup.attachment.name} className="max-w-xs h-auto rounded-md border border-gray-700 mb-4" />
+                <div className="flex items-center justify-between font-mono text-sm text-gray-400">
+                    <span>{writeup.attachment.name}</span>
+                    <button
+                        onClick={handleRemoveAttachment}
+                        className="text-red-500/70 hover:text-red-400 transition-colors"
+                        aria-label="Remove attachment"
+                    >
+                        [REMOVE]
+                    </button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <input
+                    type="file"
+                    id="attachment"
+                    onChange={handleFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    aria-label="Upload an attachment"
+                />
+                <div className="w-full p-8 border-2 border-dashed border-gray-700 hover:border-gray-500 transition-colors duration-300 text-center cursor-pointer flex flex-col items-center justify-center">
+                    <p className="text-gray-400">Click or drag & drop a file</p>
+                    <p className="text-xs text-gray-600 mt-1">Image files work best</p>
+                </div>
+              </div>
+            )}
         </div>
 
         <div className={sectionStyles}>
